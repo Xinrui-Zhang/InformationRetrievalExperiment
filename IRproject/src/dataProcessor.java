@@ -13,13 +13,6 @@ import java.util.TreeMap;
 
 public class dataProcessor {
 
-    /**
-     * @author 张心睿
-     * @description 读取诗词文件并存入Java对象Poet
-     * @date 19:42 2021/5/6
-     * @param path
-     * @return void
-     **/
     private static TreeMap<String, Poet> poets = new TreeMap<String, Poet>(new Comparator() {
         public int compare(Object o1, Object o2) {
             //如果有空值，直接返回0
@@ -45,6 +38,13 @@ public class dataProcessor {
         }
     });
 
+    /**
+     * @author 张心睿
+     * @description 读取诗词文件并存入Java对象Poet
+     * @date 19:42 2021/5/6
+     * @param path
+     * @return void
+     **/
     public static void readFile(String path) throws IOException {
         char[] cbuf = new char[1000000000];
         InputStreamReader input =new InputStreamReader(new FileInputStream(new File(path)));
@@ -69,17 +69,24 @@ public class dataProcessor {
 
     }
 
+    /**
+     * @author 张心睿
+     * @description 写入字典文件
+     * @date 19:27 2021/5/7
+     * @param []
+     * @return void
+     **/
     public static void writeFile() throws IOException {
         for (Poet poet : poets.values()) {
             char[] content = poet.getContent().toCharArray();
             for (char c : content) {
                 if(poetTerm.containsKey(c)){
-                    poetTerm.get(c).addDocID(poet.getPid());
+                    poetTerm.get(c).addDoc(poet.getPid());
                     poetTerm.get(c).addCollFreq();
                 }else {
                     Term t = new Term();
                     t.setWord(c);
-                    t.addDocID(poet.getPid());
+                    t.addDoc(poet.getPid());
                     t.addCollFreq();
                     poetTerm.put(c,t);
                 }
@@ -94,10 +101,10 @@ public class dataProcessor {
         {
             JSONObject subObj=new JSONObject();//创建对象数组里的子对象
             subObj.put("Word",String.valueOf(term.getWord()));
-            for(String docID : term.getDocID().keySet()){
+            for(String docID : term.getDoc().keySet()){
                 JSONObject subSubObj=new JSONObject();//创建对象数组里的子对象
                 subSubObj.put("docID",docID);
-                subSubObj.put("TermFreq",term.getDocID().get(docID));
+                subSubObj.put("TermFreq",term.getDoc().get(docID));
                 subObj.accumulate("Docs", subSubObj);
             }
             subObj.put("CollFreq",term.getCollFreq());
