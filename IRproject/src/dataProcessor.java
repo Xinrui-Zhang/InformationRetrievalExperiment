@@ -97,11 +97,11 @@ public class dataProcessor {
             for(String docID : term.getDocID().keySet()){
                 JSONObject subSubObj=new JSONObject();//创建对象数组里的子对象
                 subSubObj.put("docID",docID);
-                System.out.println(poets.get(docID).getTitle()+poets.get(docID).getAuthor()+poets.get(docID).getContent());
                 subSubObj.put("TermFreq",term.getDocID().get(docID));
                 subObj.accumulate("Docs", subSubObj);
             }
             subObj.put("CollFreq",term.getCollFreq());
+            subObj.put("DocNum",term.getDocNum());
             obj.accumulate("Terms",subObj);
         }
         osw.write(obj.toString());
