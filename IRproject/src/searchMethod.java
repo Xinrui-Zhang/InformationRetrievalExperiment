@@ -16,7 +16,7 @@ public class searchMethod {
         Iterator i = result.entrySet().iterator();
         Iterator j = next.entrySet().iterator();
         while (i.hasNext() && j.hasNext()) {
-            Map.Entry rentry = (Map.Entry)i.next();
+            Map.Entry rentry = ( Map.Entry)i.next();
             Map.Entry nentry = (Map.Entry)j.next();
             String resultID=(String)rentry.getKey();
             String nextID=(String)nentry.getKey();
