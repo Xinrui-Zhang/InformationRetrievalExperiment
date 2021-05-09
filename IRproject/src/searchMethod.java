@@ -74,8 +74,41 @@ public class searchMethod {
             result=AND(result,next.get(i));
         }
         return result;
-    };
+    }
 
 
     
-}
+    private ArrayList<String> OR(ArrayList<String> p1, ArrayList<String> p2){
+        ArrayList<String> docId = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < p1.size() && j < p2.size()) {
+            int val = p1.get(i).compareTo(p2.get(j));
+            switch (val) {
+                //相等
+                case 0 -> {
+                    docId.add(p1.get(i));
+                    i++;
+                    j++;
+                }
+                //result[i] < next[j]
+                case -1 -> {
+                    docId.add(p1.get(i));
+                    i++;
+                }
+                //result[i] > next[j]
+                case 1 -> {
+                    docId.add(p2.get(i));
+                    j++;
+                }
+            }
+        }
+        while (i < p1.size()) {
+            docId.add(p1.get(i++));
+        }
+        while (j < p2.size()) {
+            docId.add(p2.get(i++));
+        }
+        return docId;
+    }
+
+};

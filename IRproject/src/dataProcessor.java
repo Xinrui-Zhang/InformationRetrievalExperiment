@@ -66,17 +66,6 @@ public class dataProcessor {
             }
             poets.put(subObj.getString("id"), new Poet(subObj.getString("title"),subObj.getString("author"),String.valueOf(sentence),subObj.getString("id")));
         }
-
-    }
-
-    /**
-     * @author 张心睿
-     * @description 写入字典文件
-     * @date 19:27 2021/5/7
-     * @param []
-     * @return void
-     **/
-    public static void writeFile() throws IOException {
         for (Poet poet : poets.values()) {
             char[] content = poet.getContent().toCharArray();
             for (char c : content) {
@@ -93,6 +82,34 @@ public class dataProcessor {
 
             }
         }
+        for (Term term : poetTerm.values()){
+            TreeMap<String, Double> tfidf = new TreeMap<>();
+            TreeMap<String, Double> wfidf = new TreeMap<>();
+            for(String docID : term.getDoc().keySet()){
+                Poet temp = poets.get(docID);
+                double tf = (double)term.getDoc().get(docID) / (double)temp.getWordNum();
+                double wf = tf==0? 0 : (Math.log(tf)/Math.log(10)+1);
+                double idf = Math.log(1000 / (double)(term.getDocNum()+1))/Math.log(10);
+                double tf_idf = tf * idf;
+                double wf_idf = wf * idf;
+                tfidf.put(docID,tf_idf);
+                wfidf.put(docID,wf_idf);
+            }
+            term.setTfidf(tfidf);
+            term.setWfidf(wfidf);
+        }
+
+
+    }
+
+    /**
+     * @author 张心睿
+     * @description 写入字典文件
+     * @date 19:27 2021/5/7
+     * @param
+     * @return void
+     **/
+    public static void writeFile() throws IOException {
         OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(".\\dataset\\dictionary.json"),"UTF-8");
 
         JSONObject obj=new JSONObject();//创建JSONObject对象
@@ -116,6 +133,13 @@ public class dataProcessor {
         osw.close();//关闭输出流
     }
 
+    public static TreeMap<String, Poet> getPoets() {
+        return poets;
+    }
+
+    public static TreeMap<Character, Term> getPoetTerm() {
+        return poetTerm;
+    }
 
     public static void main(String[] args) throws IOException {
         String path =".\\dataset\\poet.tang.1000.json";
