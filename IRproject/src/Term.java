@@ -10,6 +10,8 @@ public class Term {
     private TreeMap<String, Integer> docs= new TreeMap<>();
     private int collFreq = 0;
     private int docNum = 0;
+    private TreeMap<String, Double> tfidf = new TreeMap<>();
+    private TreeMap<String, Double> wfidf = new TreeMap<>();
 
     /**
      * @author 张心睿
@@ -82,6 +84,14 @@ public class Term {
         this.docNum = docNum;
     }
 
+    public void setTfidf(TreeMap<String, Double> tfidf) {
+        this.tfidf = tfidf;
+    }
+
+    public void setWfidf(TreeMap<String, Double> wfidf) {
+        this.wfidf = wfidf;
+    }
+
     /**
      * @author 张心睿
      * @description
@@ -135,6 +145,14 @@ public class Term {
      **/
     public int getDocNum() {
         return docNum;
+    }
+
+    public TreeMap<String, Double> getTfidf() {
+        return tfidf;
+    }
+
+    public TreeMap<String, Double> getWfidf() {
+        return wfidf;
     }
 }
 

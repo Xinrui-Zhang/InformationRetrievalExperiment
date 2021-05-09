@@ -8,6 +8,7 @@ public class Poet {
     private String author;
     private String paragraphs;
     private String pid;
+    private Integer wordNum;
     /**
      * @author 张心睿
      * @description
@@ -75,7 +76,9 @@ public class Poet {
      * @return void
      **/
     public void setParagraphs(String paragraphs) {
+
         this.paragraphs = paragraphs;
+        setWordNum(paragraphs.replaceAll("\\pP","").length());
     }
 
     /**
@@ -133,4 +136,11 @@ public class Poet {
         return pid;
     }
 
+    public void setWordNum(Integer wordNum) {
+        this.wordNum = wordNum;
+    }
+
+    public Integer getWordNum() {
+        return wordNum;
+    }
 }
