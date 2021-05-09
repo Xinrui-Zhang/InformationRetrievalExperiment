@@ -2,55 +2,80 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.*;
 public class searchMethod {
-    public void query(String input,LinkedList<Term> dictionary) {
+    public void query(ArrayList<Character> input, LinkedList<Term> dictionary) {
+
 
     }
-    private ArrayList<String> AND(ArrayList<String> result, ArrayList<String> next) {
-        ArrayList<String> docId = new ArrayList<>();
-        int i = 0, j = 0;
-        while (i < result.size() && j < next.size()) {
-            int val = result.get(i).compareTo(next.get(j));
+  private TreeMap<String, Integer> getID(Term term)
+  {
+      return term.getDoc();
+  }
+
+    private TreeMap<String, Integer> AND(TreeMap<String, Integer> result, TreeMap<String, Integer> next) {
+        TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
+        Iterator i = result.entrySet().iterator();
+        Iterator j = next.entrySet().iterator();
+        while (i.hasNext() && j.hasNext()) {
+            Map.Entry rentry = (Map.Entry)i.next();
+            Map.Entry nentry = (Map.Entry)j.next();
+            String resultID=(String)rentry.getKey();
+            String nextID=(String)nentry.getKey();
+            int val = resultID.compareTo(nextID);
             switch (val) {
                 case 0: //相等
-                    docId.add(result.get(i));
-                    i++;
-                    j++;
+                    docId.put((String)nentry.getKey(),(Integer)nentry.getValue());
+                    i.next();
+                    j.next();
                     break;
                 case -1: //result[i] < next[j]
-                    i++;
+                    i.next();
                     break;
                 case 1: //result[i] > next[j]
-                    j++;
+                    j.next();
                     break;
             }
         }
         return docId;
     }
 
-    private ArrayList<String> ANDNOT(ArrayList<String> result, ArrayList<String> next) {
-        ArrayList<String> docId = new ArrayList<>();
-        int i = 0, j = 0;
-        while (i < result.size() && j < next.size()) {
-            int val = result.get(i).compareTo(next.get(j));
+    private TreeMap<String, Integer> ANDNOT(TreeMap<String, Integer> result, TreeMap<String, Integer> next) {
+
+        TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
+        Iterator i = result.entrySet().iterator();
+        Iterator j = next.entrySet().iterator();
+        while (i.hasNext() && j.hasNext()) {
+            Map.Entry rentry = (Map.Entry)i.next();
+            Map.Entry nentry = (Map.Entry)j.next();
+            String resultID=(String)rentry.getKey();
+            String nextID=(String)nentry.getKey();
+            int val = resultID.compareTo(nextID);
             switch (val) {
                 case 0: //相等
-                    i++;
-                    j++;
+                    i.next();
+                    j.next();
                     break;
                 case -1: //result[i] < next[j]
-                    docId.add(result.get(i));
-                    i++;
-                    break;
                 case 1: //result[i] > next[j]
-                    j++;
+                    docId.put((String)rentry.getKey(),(Integer)rentry.getValue());
+                    docId.put((String)nentry.getKey(),(Integer)nentry.getValue());
+                    i.next();
+                    j.next();
                     break;
             }
         }
-        while (i < result.size()) {
-            docId.add(result.get(i++));
-        }
+
         return docId;
     }
+
+    private TreeMap<String, Integer> AndAll(TreeMap<String, Integer> result, ArrayList<TreeMap<String, Integer>> next)
+    {   int i=0;
+        while(i<next.size())
+        {
+            result=AND(result,next.get(i));
+        }
+        return result;
+    };
+
 
     
 }
