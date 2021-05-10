@@ -67,8 +67,24 @@ public class searchMethod {
         return docId;
     }
 
-    private TreeMap<String, Integer> AndAll(TreeMap<String, Integer> result, ArrayList<TreeMap<String, Integer>> next)
-    {   int i=0;
+    private TreeMap<String, Integer> AndAll( TreeMap<String, Integer> result,ArrayList<TreeMap<String, Integer>> next)
+    {
+
+       next.sort(new Comparator<TreeMap<String, Integer>>() {
+           @Override
+           public int compare(TreeMap<String, Integer> o1, TreeMap<String, Integer> o2) {
+               int dif=o1.size()-o2.size();
+               if(dif>0){
+                   return 1;
+               }else if(dif<0){
+                   return -1;
+               }
+               return 0;
+           }
+       });
+
+
+        int i=0;
         while(i<next.size())
         {
             result=AND(result,next.get(i));
