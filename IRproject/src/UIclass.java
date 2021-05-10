@@ -18,13 +18,15 @@ public class UIclass extends JFrame{
     public JTextField searchText;
     public JButton search;
     public JSlider jSlider;
-    public JTextArea showArea;
+    public static JTextArea showArea;
     public ArrayList<Character> text;
     private searchMethod sm;
     public TreeMap<Character,Term> getDictionary;
     public dataProcessor data;
+    private final TreeMap<Character,Term> terms;
+    private final TreeMap<String, Poet> poets;
 
-    public UIclass()  {
+    public UIclass() throws IOException {
         super();
         this.setSize(700, 500);     //窗口大小
         this.getContentPane().setLayout(null);
@@ -33,6 +35,10 @@ public class UIclass extends JFrame{
         this.add(getJSlider(),null);
         this.add(getJTextArea(),null);
         this.setTitle("信息检索");
+        String path =".\\dataset\\poet.tang.1000.json";
+        dataProcessor.readFile(path);
+        poets = dataProcessor.getPoets();
+        terms = dataProcessor.getPoetTerm();
 
     }
 
@@ -63,6 +69,20 @@ public class UIclass extends JFrame{
             search.setBounds(420, 50, 60, 20);
             search.setText("搜索");
         }
+        search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showArea.setText("");
+                searchMethod s = new searchMethod();
+                String text;
+                text=searchText.getText();
+                TreeMap<String, Integer> result = s.query(text,terms);
+                for(String d : result.keySet()) {
+                    Poet t = poets.get(d);
+                    showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n");
+                }
+            }
+        });
         return search;
 
     }
@@ -75,12 +95,13 @@ public class UIclass extends JFrame{
         }
         return showArea;
     }
-    public static void main(String[] args)
-     {
+    public static void main(String[] args) throws IOException {
          UIclass w = new UIclass();
          w.setVisible(true);                         //设为可见
-         String text;
-         text=w.searchText.getText();
+
+
+
+
 
 
      }

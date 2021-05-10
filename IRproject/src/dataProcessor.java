@@ -46,10 +46,12 @@ public class dataProcessor {
      * @return void
      **/
     public static void readFile(String path) throws IOException {
-        char[] cbuf = new char[1000000000];
+        char[] cbuf = new char[100000000];
         InputStreamReader input =new InputStreamReader(new FileInputStream(new File(path)));
         int len =input.read(cbuf);
         String text =new String(cbuf,0,len);
+        cbuf=null;
+        System.gc();
         //构建json对象
         JSONObject obj = new JSONObject(text.substring(text.indexOf("{")));
         System.out.println("groupID"+obj.getString("groupID"));
@@ -98,8 +100,6 @@ public class dataProcessor {
             term.setTfidf(tfidf);
             term.setWfidf(wfidf);
         }
-
-
     }
 
     /**
@@ -122,6 +122,8 @@ public class dataProcessor {
                 JSONObject subSubObj=new JSONObject();//创建对象数组里的子对象
                 subSubObj.put("docID",docID);
                 subSubObj.put("TermFreq",term.getDoc().get(docID));
+                subSubObj.put("tf-idf",term.getTfidf().get(docID));
+                subSubObj.put("wf-idf",term.getWfidf().get(docID));
                 subObj.accumulate("Docs", subSubObj);
             }
             subObj.put("CollFreq",term.getCollFreq());
