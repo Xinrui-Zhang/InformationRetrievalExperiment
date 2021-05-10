@@ -92,35 +92,34 @@ public class searchMethod {
 
 
     
-    private ArrayList<String> OR(ArrayList<String> p1, ArrayList<String> p2){
-        ArrayList<String> docId = new ArrayList<>();
-        int i = 0, j = 0;
-        while (i < p1.size() && j < p2.size()) {
-            int val = p1.get(i).compareTo(p2.get(j));
+    private TreeMap<String, Integer> OR(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2){
+        TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
+        Iterator i = p1.entrySet().iterator();
+        Iterator j = p2.entrySet().iterator();
+        while (i.hasNext() && j.hasNext()) {
+            Map.Entry rentry = (Map.Entry)i.next();
+            Map.Entry nentry = (Map.Entry)j.next();
+            String p1ID=(String)rentry.getKey();
+            String p2ID=(String)nentry.getKey();
+            int val = p1ID.compareTo(p2ID);
             switch (val) {
                 //相等
                 case 0 -> {
-                    docId.add(p1.get(i));
-                    i++;
-                    j++;
+                    docId.put((String) nentry.getKey(), (Integer) nentry.getValue());
+                    i.next();
+                    j.next();
                 }
                 //result[i] < next[j]
                 case -1 -> {
-                    docId.add(p1.get(i));
-                    i++;
+                    docId.put((String) rentry.getKey(), (Integer) rentry.getValue());
+                    i.next();
                 }
                 //result[i] > next[j]
                 case 1 -> {
-                    docId.add(p2.get(i));
-                    j++;
+                    docId.put((String) nentry.getKey(), (Integer) nentry.getValue());
+                    j.next();
                 }
             }
-        }
-        while (i < p1.size()) {
-            docId.add(p1.get(i++));
-        }
-        while (j < p2.size()) {
-            docId.add(p2.get(i++));
         }
         return docId;
     }
