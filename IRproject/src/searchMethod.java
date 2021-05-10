@@ -1,15 +1,13 @@
+/**
+ * @创建人 柳靖洋
+ * @创建时间 2021/5/10
+ * @描述
+ */
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.*;
 public class searchMethod {
-    public void query(ArrayList<Character> input, LinkedList<Term> dictionary) {
 
-
-    }
-  private TreeMap<String, Integer> getID(Term term)
-  {
-      return term.getDoc();
-  }
 
     private TreeMap<String, Integer> AND(TreeMap<String, Integer> result, TreeMap<String, Integer> next) {
         TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
