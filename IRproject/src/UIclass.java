@@ -37,7 +37,7 @@ public class UIclass extends JFrame{
         this.setTitle("信息检索");
         String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
-        dataProcessor.writeFile();
+        //dataProcessor.writeFile();
         poets = dataProcessor.getPoets();
         terms = dataProcessor.getPoetTerm();
 
@@ -78,9 +78,13 @@ public class UIclass extends JFrame{
                 String text;
                 text=searchText.getText();
                 TreeMap<String, Integer> result = s.query(text,terms);
-                for(String d : result.keySet()) {
-                    Poet t = poets.get(d);
-                    showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n");
+                if(result.isEmpty()){
+                    showArea.append("无结果");
+                }else{
+                    for(String d : result.keySet()) {
+                        Poet t = poets.get(d);
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n");
+                    }
                 }
             }
         });
