@@ -4,6 +4,8 @@
  * @描述
  */
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,8 +30,14 @@ public class UIclass extends JFrame{
     private final TreeMap<Character,Term> terms;
     private final TreeMap<String, Poet> poets;
     private Color backColor;
+    private Color contentColor;
+    private Color textColor;
+    private Color boderColor;
     public UIclass() throws IOException {
         super();
+        textColor=new Color(228,223,215);
+        contentColor=new Color(113,54,29);
+        boderColor=new Color(217,145,86);
         this.setSize(1200, 800);     //窗口大小
         this.getContentPane().setLayout(null);
         this.add(getJTextField(), null);
@@ -76,7 +84,8 @@ public class UIclass extends JFrame{
                 TreeMap<String, Integer> result = s.query(text,terms);
                 for(String d : result.keySet()) {
                     Poet t = poets.get(d);
-                    showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n");
+                    showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"\n\n");
+
                 }
             }
         });
@@ -89,6 +98,10 @@ public class UIclass extends JFrame{
         {
             showArea =new JTextArea();
             showArea.setBounds(300,100,380,500);
+            showArea.setLineWrap(true);
+            showArea.setEditable(false);
+            showArea.setBackground(contentColor);
+            showArea.setForeground(textColor);
 
         }
         return showArea;
@@ -98,9 +111,10 @@ public class UIclass extends JFrame{
         if(scroll == null)
         {
             scroll =new JScrollPane();
-            scroll.setBounds(300,100,600,500);
+            scroll.setBounds(100,150,1000,500);
             scroll.setViewportView(getJTextArea());
             scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scroll.setBorder(BorderFactory.createMatteBorder(50,220,50,220,boderColor));
         }
         return scroll;
     }
