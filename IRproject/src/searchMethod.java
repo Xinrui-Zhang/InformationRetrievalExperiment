@@ -3,11 +3,13 @@
  * @创建时间 2021/5/10
  * @描述
  */
+import java.text.CollationKey;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.*;
 public class searchMethod {
-
+    private Poet poet;
     public TreeMap<String, Integer> query(String q, TreeMap<Character, Term> terms){
         TreeMap<String, Integer> result = new TreeMap<>();
         for(int i = 0; i < q.length(); i++){
@@ -34,8 +36,10 @@ public class searchMethod {
 
             }
         }
+        
         return result;
     }
+
 
     private TreeMap<String, Integer> AND(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2) {
         TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
@@ -85,6 +89,7 @@ public class searchMethod {
             docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
             i++;
         }
+
         return docId;
     }
 

@@ -38,7 +38,7 @@ public class UIclass extends JFrame{
         textColor=new Color(228,223,215);
         contentColor=new Color(113,54,29);
         boderColor=new Color(217,145,86);
-        this.setSize(1200, 800);     //窗口大小
+        this.setSize(1000, 800);     //窗口大小
         this.getContentPane().setLayout(null);
         this.add(getJTextField(), null);
         this.add(getJButton(), null);
@@ -46,13 +46,14 @@ public class UIclass extends JFrame{
         //this.add(getJTextArea(),null);
         this.setTitle("信息检索");
 
-        this.getContentPane().setBackground(new Color(248,232,193));
+        this.getContentPane().setBackground(new Color(255,255,255));
         String path="IRproject/dataset/poet.tang.1000.json";
         //String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
         //dataProcessor.writeFile();
         poets = dataProcessor.getPoets();
         terms = dataProcessor.getPoetTerm();
+
 
     }
 
@@ -87,7 +88,7 @@ public class UIclass extends JFrame{
                 }else{
                     for(String d : result.keySet()) {
                         Poet t = poets.get(d);
-                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n");
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n\n\n");
                     }
                 }
             }
@@ -114,7 +115,7 @@ public class UIclass extends JFrame{
         if(scroll == null)
         {
             scroll =new JScrollPane();
-            scroll.setBounds(100,150,1000,500);
+            scroll.setBounds(0,150,1000,500);
             scroll.setViewportView(getJTextArea());
             scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             scroll.setBorder(BorderFactory.createMatteBorder(50,220,50,220,boderColor));
