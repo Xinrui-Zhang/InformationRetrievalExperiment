@@ -4,6 +4,7 @@
  * @描述
  */
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -19,23 +20,27 @@ public class UIclass extends JFrame{
     public JButton search;
     public JSlider jSlider;
     public static JTextArea showArea;
+    public static JScrollPane scroll;
     public ArrayList<Character> text;
     private searchMethod sm;
     public TreeMap<Character,Term> getDictionary;
     public dataProcessor data;
     private final TreeMap<Character,Term> terms;
     private final TreeMap<String, Poet> poets;
-
+    private Color backColor;
     public UIclass() throws IOException {
         super();
-        this.setSize(700, 500);     //窗口大小
+        this.setSize(1200, 800);     //窗口大小
         this.getContentPane().setLayout(null);
         this.add(getJTextField(), null);
         this.add(getJButton(), null);
-        this.add(getJSlider(),null);
-        this.add(getJTextArea(),null);
+        this.add(getScrollPane(),null);
+        //this.add(getJTextArea(),null);
         this.setTitle("信息检索");
-        String path =".\\dataset\\poet.tang.1000.json";
+
+        this.getContentPane().setBackground(new Color(248,232,193));
+        String path="IRproject/dataset/poet.tang.1000.json";
+        //String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
         poets = dataProcessor.getPoets();
         terms = dataProcessor.getPoetTerm();
@@ -48,25 +53,16 @@ public class UIclass extends JFrame{
     {
         if(searchText == null) {
             searchText = new javax.swing.JTextField();
-            searchText.setBounds(100, 50, 300, 20);
+            searchText.setBounds(300, 50, 300, 20);
         }
         return searchText;
     }
-    private JSlider getJSlider()
-    {
-        if(jSlider == null)
-        {
-            jSlider =new JSlider();
-            jSlider.setOrientation(SwingConstants.VERTICAL);
-            jSlider.setBounds(500,200,20,100);
-        }
-    return jSlider;
-    }
+
     private JButton getJButton()
     {
         if(search == null) {
             search = new javax.swing.JButton();
-            search.setBounds(420, 50, 60, 20);
+            search.setBounds(820, 50, 80, 20);
             search.setText("搜索");
         }
         search.addActionListener(new ActionListener() {
@@ -91,11 +87,24 @@ public class UIclass extends JFrame{
         if(showArea == null)
         {
             showArea =new JTextArea();
-            showArea.setBounds(100,100,380,300);
+            showArea.setBounds(300,100,380,500);
+
         }
         return showArea;
     }
+    private JScrollPane getScrollPane()
+    {
+        if(scroll == null)
+        {
+            scroll =new JScrollPane();
+            scroll.setBounds(300,100,600,500);
+            scroll.setViewportView(getJTextArea());
+            scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        }
+        return scroll;
+    }
     public static void main(String[] args) throws IOException {
+
          UIclass w = new UIclass();
          w.setVisible(true);                         //设为可见
 
