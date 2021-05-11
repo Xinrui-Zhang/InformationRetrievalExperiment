@@ -42,6 +42,7 @@ public class UIclass extends JFrame{
         String path="IRproject/dataset/poet.tang.1000.json";
         //String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
+        dataProcessor.writeFile();
         poets = dataProcessor.getPoets();
         terms = dataProcessor.getPoetTerm();
 
