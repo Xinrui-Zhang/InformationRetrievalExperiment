@@ -37,59 +37,54 @@ public class searchMethod {
         return result;
     }
 
-    private TreeMap<String, Integer> AND(TreeMap<String, Integer> result, TreeMap<String, Integer> next) {
+    private TreeMap<String, Integer> AND(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2) {
         TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
-        Iterator i = result.entrySet().iterator();
-        Iterator j = next.entrySet().iterator();
-        while (i.hasNext() && j.hasNext()) {
-            Map.Entry rentry = ( Map.Entry)i.next();
-            Map.Entry nentry = (Map.Entry)j.next();
-            String resultID=(String)rentry.getKey();
-            String nextID=(String)nentry.getKey();
-            int val = resultID.compareTo(nextID);
-            switch (val) {
-                case 0: //相等
-                    docId.put((String)nentry.getKey(),(Integer)nentry.getValue());
-                    i.next();
-                    j.next();
-                    break;
-                case -1: //result[i] < next[j]
-                    i.next();
-                    break;
-                case 1: //result[i] > next[j]
-                    j.next();
-                    break;
+        int i = 0, j = 0;
+        String p1ID="",p2ID="";
+        while (i<p1.keySet().size() && j<p2.keySet().size()){
+            p1ID=(String)p1.keySet().toArray()[i];
+            p2ID=(String)p2.keySet().toArray()[j];
+            int val = p1ID.compareTo(p2ID);
+            //相等
+            if (val == 0) {
+                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                i++;
+                j++;
+            } else if (val < 0) {
+                i++;
+
+            } else if (val > 0) {
+                j++;
             }
         }
         return docId;
     }
 
-    private TreeMap<String, Integer> ANDNOT(TreeMap<String, Integer> result, TreeMap<String, Integer> next) {
+    private TreeMap<String, Integer> ANDNOT(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2) {
 
         TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
-        Iterator i = result.entrySet().iterator();
-        Iterator j = next.entrySet().iterator();
-        while (i.hasNext() && j.hasNext()) {
-            Map.Entry rentry = (Map.Entry)i.next();
-            Map.Entry nentry = (Map.Entry)j.next();
-            String resultID=(String)rentry.getKey();
-            String nextID=(String)nentry.getKey();
-            int val = resultID.compareTo(nextID);
-            switch (val) {
-                case 0: //相等
-                    i.next();
-                    j.next();
-                    break;
-                case -1: //result[i] < next[j]
-                case 1: //result[i] > next[j]
-                    docId.put((String)rentry.getKey(),(Integer)rentry.getValue());
-                    docId.put((String)nentry.getKey(),(Integer)nentry.getValue());
-                    i.next();
-                    j.next();
-                    break;
+        int i = 0, j = 0;
+        String p1ID="",p2ID="";
+        while (i<p1.keySet().size() && j<p2.keySet().size()){
+            p1ID=(String)p1.keySet().toArray()[i];
+            p2ID=(String)p2.keySet().toArray()[j];
+            int val = p1ID.compareTo(p2ID);
+            //相等
+            if (val == 0) {
+                i++;
+                j++;
+            } else if (val < 0) {
+                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                i++;
+            } else if (val > 0) {
+                j++;
             }
         }
-
+        while(i<p1.keySet().size()){
+            p1ID=(String)p1.keySet().toArray()[i];
+            docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+            i++;
+        }
         return docId;
     }
 
@@ -117,39 +112,66 @@ public class searchMethod {
         }
         return result;
     }
-
-
     
     private TreeMap<String, Integer> OR(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2){
         TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
-        Iterator i = p1.entrySet().iterator();
-        Iterator j = p2.entrySet().iterator();
-        while (i.hasNext() && j.hasNext()) {
-            Map.Entry rentry = (Map.Entry)i.next();
-            Map.Entry nentry = (Map.Entry)j.next();
-            String p1ID=(String)rentry.getKey();
-            String p2ID=(String)nentry.getKey();
+        int i = 0, j = 0;
+        String p1ID="",p2ID="";
+        while (i<p1.keySet().size() && j<p2.keySet().size()){
+            p1ID=(String)p1.keySet().toArray()[i];
+            p2ID=(String)p2.keySet().toArray()[j];
             int val = p1ID.compareTo(p2ID);
-            switch (val) {
-                //相等
-                case 0 :{
-                    docId.put((String) nentry.getKey(), (Integer) nentry.getValue());
-                    i.next();
-                    j.next();
-                }
-                //result[i] < next[j]
-                case -1 :{
-                    docId.put((String) rentry.getKey(), (Integer) rentry.getValue());
-                    i.next();
-                }
-                //result[i] > next[j]
-                case 1 :{
-                    docId.put((String) nentry.getKey(), (Integer) nentry.getValue());
-                    j.next();
-                }
+            //相等
+            if (val == 0) {
+                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                i++;
+                j++;
+            } else if (val < 0) {
+                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                i++;
+
+            } else if (val > 0) {
+                docId.put((String) p2ID, (Integer) p2.values().toArray()[j]);
+                j++;
             }
         }
+
+        while(i<p1.keySet().size()){
+            p1ID=(String)p1.keySet().toArray()[i];
+            docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+            i++;
+        }
+        while(j<p2.keySet().size()){
+            p2ID=(String)p2.keySet().toArray()[j];
+            docId.put((String) p2ID, (Integer) p2.values().toArray()[j]);
+            j++;
+        }
         return docId;
+    }
+
+    private TreeMap<String, Integer> OrAll( TreeMap<String, Integer> result,ArrayList<TreeMap<String, Integer>> next)
+    {
+
+        next.sort(new Comparator<TreeMap<String, Integer>>() {
+            @Override
+            public int compare(TreeMap<String, Integer> o1, TreeMap<String, Integer> o2) {
+                int dif=o1.size()-o2.size();
+                if(dif<0){
+                    return 1;
+                }else if(dif>0){
+                    return -1;
+                }
+                return 0;
+            }
+        });
+
+
+        int i=0;
+        while(i<next.size())
+        {
+            result=OR(result,next.get(i));
+        }
+        return result;
     }
 
 };
