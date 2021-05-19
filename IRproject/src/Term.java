@@ -1,3 +1,5 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 /**
@@ -7,11 +9,12 @@ import java.util.TreeMap;
  */
 public class Term {
     private char word;
-    private TreeMap<String, Integer> docs= new TreeMap<>();
+    private TreeMap<String, Integer> tf = new TreeMap<>();
     private int collFreq = 0;
     private int docNum = 0;
     private TreeMap<String, Double> tfidf = new TreeMap<>();
     private TreeMap<String, Double> wfidf = new TreeMap<>();
+    private TreeMap<String, ArrayList<Double>> docs = new TreeMap<>();
 
     /**
      * @author 张心睿
@@ -33,22 +36,19 @@ public class Term {
      **/
     public void addDoc(String docID) {
         if(this.docs.containsKey(docID)){
-            this.docs.put(docID, this.docs.get(docID)+1);
+            ArrayList<Double> temp = this.docs.get(docID);
+            temp.set(0,temp.get(0)+1);
+            this.docs.put(docID, temp);
         }else {
-            this.docs.put(docID, 1);
+            ArrayList<Double> temp = new ArrayList<>();
+            temp.add(0,1.0);
+            this.docs.put(docID, temp);
             addDocNum();
         }
     }
 
-    /**
-     * @author 张心睿
-     * @description
-     * @date 19:30 2021/5/7
-     * @param docID
-     * @return void
-     **/
-    public void setDoc(TreeMap<String, Integer> docID) {
-        this.docs = docID;
+    public void setDocs(TreeMap<String, ArrayList<Double>> docs) {
+        this.docs = docs;
     }
 
     /**
@@ -84,14 +84,6 @@ public class Term {
         this.docNum = docNum;
     }
 
-    public void setTfidf(TreeMap<String, Double> tfidf) {
-        this.tfidf = tfidf;
-    }
-
-    public void setWfidf(TreeMap<String, Double> wfidf) {
-        this.wfidf = wfidf;
-    }
-
     /**
      * @author 张心睿
      * @description
@@ -121,7 +113,7 @@ public class Term {
      * @param
      * @return java.util.TreeMap<java.lang.String,java.lang.Integer>
      **/
-    public TreeMap<String, Integer> getDoc() {
+    public TreeMap<String, ArrayList<Double>> getDoc() {
         return docs;
     }
 
@@ -147,12 +139,8 @@ public class Term {
         return docNum;
     }
 
-    public TreeMap<String, Double> getTfidf() {
-        return tfidf;
-    }
-
-    public TreeMap<String, Double> getWfidf() {
-        return wfidf;
+    public TreeMap<String, ArrayList<Double>> getDocs() {
+        return docs;
     }
 }
 

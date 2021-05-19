@@ -3,51 +3,43 @@
  * @创建时间 2021/5/10
  * @描述
  */
-import java.text.CollationKey;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.*;
 public class searchMethod {
-    private Poet poet;
 
-    public TreeMap<String, Integer> query(String q, TreeMap<Character, Term> terms) {
-
-        TreeMap<String, Integer> result = new TreeMap<>();
-        for (int i = 0; i < q.length(); i++) {
-            switch (q.charAt(i)) {
+    public TreeMap<String, ArrayList<Double>> query(String q, TreeMap<Character, Term> terms){
+        TreeMap<String, ArrayList<Double>> result = new TreeMap<>();
+        for(int i = 0; i < q.length(); i++){
+            switch (q.charAt(i)){
                 case '+':
-                    if (terms.containsKey(q.charAt(i + 1)))
-                        result = OR(result, terms.get(q.charAt(i + 1)).getDoc());
+                    if(terms.containsKey(q.charAt(i+1)))
+                        result = OR(result,terms.get(q.charAt(i+1)).getDoc());
                     i++;
                     break;
                 case '*':
-                    if (terms.containsKey(q.charAt(i + 1)))
-                        result = AND(result, terms.get(q.charAt(i + 1)).getDoc());
+                    if(terms.containsKey(q.charAt(i+1)))
+                        result = AND(result,terms.get(q.charAt(i+1)).getDoc());
                     i++;
                     break;
                 case '-':
-                    if (terms.containsKey(q.charAt(i + 1)))
-                        result = ANDNOT(result, terms.get(q.charAt(i + 1)).getDoc());
+                    if(terms.containsKey(q.charAt(i+1)))
+                        result = ANDNOT(result,terms.get(q.charAt(i+1)).getDoc());
                     i++;
                     break;
                 default:
-                    if (terms.containsKey(q.charAt(i)))
+                    if(terms.containsKey(q.charAt(i)))
                         result = terms.get(q.charAt(i)).getDoc();
                     break;
 
             }
         }
 
-
-
         return result;
     }
 
-
-
-    private TreeMap<String, Integer> AND(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2) {
-        TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
+    private TreeMap<String, ArrayList<Double>> AND(TreeMap<String, ArrayList<Double>> p1, TreeMap<String, ArrayList<Double>> p2) {
+        TreeMap<String, ArrayList<Double>> docId = new TreeMap<String, ArrayList<Double>>();
         int i = 0, j = 0;
         String p1ID="",p2ID="";
         while (i<p1.keySet().size() && j<p2.keySet().size()){
@@ -56,7 +48,11 @@ public class searchMethod {
             int val = p1ID.compareTo(p2ID);
             //相等
             if (val == 0) {
-                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                ArrayList<Double> temp = new ArrayList<>();
+                temp.add( (p1.get(p1ID).get(0)+p1.get(p1ID).get(0))/2.0);
+                temp.add( (p1.get(p1ID).get(1)+p1.get(p1ID).get(1))/2.0);
+                temp.add( (p1.get(p1ID).get(2)+p1.get(p1ID).get(2))/2.0);
+                docId.put((String) p1ID, temp);
                 i++;
                 j++;
             } else if (val < 0) {
@@ -69,9 +65,9 @@ public class searchMethod {
         return docId;
     }
 
-    private TreeMap<String, Integer> ANDNOT(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2) {
+    private TreeMap<String, ArrayList<Double>> ANDNOT(TreeMap<String, ArrayList<Double>> p1, TreeMap<String, ArrayList<Double>> p2) {
 
-        TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
+        TreeMap<String, ArrayList<Double>> docId = new TreeMap<String, ArrayList<Double>>();
         int i = 0, j = 0;
         String p1ID="",p2ID="";
         while (i<p1.keySet().size() && j<p2.keySet().size()){
@@ -83,7 +79,7 @@ public class searchMethod {
                 i++;
                 j++;
             } else if (val < 0) {
-                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                docId.put((String) p1ID, p1.get(p1ID));
                 i++;
             } else if (val > 0) {
                 j++;
@@ -91,19 +87,18 @@ public class searchMethod {
         }
         while(i<p1.keySet().size()){
             p1ID=(String)p1.keySet().toArray()[i];
-            docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+            docId.put((String) p1ID,p1.get(p1ID));
             i++;
         }
-
         return docId;
     }
 
-    private TreeMap<String, Integer> AndAll( TreeMap<String, Integer> result,ArrayList<TreeMap<String, Integer>> next)
+    private TreeMap<String, ArrayList<Double>> AndAll( TreeMap<String, ArrayList<Double>> result,ArrayList<TreeMap<String, ArrayList<Double>>> next)
     {
 
-       next.sort(new Comparator<TreeMap<String, Integer>>() {
+       next.sort(new Comparator<TreeMap<String, ArrayList<Double>>>() {
            @Override
-           public int compare(TreeMap<String, Integer> o1, TreeMap<String, Integer> o2) {
+           public int compare(TreeMap<String, ArrayList<Double>> o1, TreeMap<String, ArrayList<Double>> o2) {
                int dif=o1.size()-o2.size();
                if(dif>0){
                    return 1;
@@ -123,8 +118,8 @@ public class searchMethod {
         return result;
     }
     
-    private TreeMap<String, Integer> OR(TreeMap<String, Integer> p1, TreeMap<String, Integer> p2){
-        TreeMap<String, Integer> docId = new TreeMap<String, Integer>();
+    private TreeMap<String, ArrayList<Double>> OR(TreeMap<String, ArrayList<Double>> p1, TreeMap<String, ArrayList<Double>> p2){
+        TreeMap<String, ArrayList<Double>> docId = new TreeMap<String, ArrayList<Double>>();
         int i = 0, j = 0;
         String p1ID="",p2ID="";
         while (i<p1.keySet().size() && j<p2.keySet().size()){
@@ -133,38 +128,42 @@ public class searchMethod {
             int val = p1ID.compareTo(p2ID);
             //相等
             if (val == 0) {
-                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                ArrayList<Double> temp = new ArrayList<>();
+                temp.add( (p1.get(p1ID).get(0)+p1.get(p1ID).get(0))/2.0);
+                temp.add( (p1.get(p1ID).get(1)+p1.get(p1ID).get(1))/2.0);
+                temp.add( (p1.get(p1ID).get(2)+p1.get(p1ID).get(2))/2.0);
+                docId.put((String) p1ID, temp);
                 i++;
                 j++;
             } else if (val < 0) {
-                docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+                docId.put((String) p1ID, p1.get(p1ID));
                 i++;
 
             } else if (val > 0) {
-                docId.put((String) p2ID, (Integer) p2.values().toArray()[j]);
+                docId.put((String) p2ID, p2.get(p2ID));
                 j++;
             }
         }
 
         while(i<p1.keySet().size()){
             p1ID=(String)p1.keySet().toArray()[i];
-            docId.put((String) p1ID, (Integer) p1.values().toArray()[i]);
+            docId.put((String) p1ID, p1.get(p1ID));
             i++;
         }
         while(j<p2.keySet().size()){
             p2ID=(String)p2.keySet().toArray()[j];
-            docId.put((String) p2ID, (Integer) p2.values().toArray()[j]);
+            docId.put((String) p2ID, p2.get(p2ID));
             j++;
         }
         return docId;
     }
 
-    private TreeMap<String, Integer> OrAll( TreeMap<String, Integer> result,ArrayList<TreeMap<String, Integer>> next)
+    private TreeMap<String, ArrayList<Double>> OrAll( TreeMap<String, ArrayList<Double>> result,ArrayList<TreeMap<String, ArrayList<Double>>> next)
     {
 
-        next.sort(new Comparator<TreeMap<String, Integer>>() {
+        next.sort(new Comparator<TreeMap<String, ArrayList<Double>>>() {
             @Override
-            public int compare(TreeMap<String, Integer> o1, TreeMap<String, Integer> o2) {
+            public int compare(TreeMap<String, ArrayList<Double>> o1, TreeMap<String, ArrayList<Double>> o2) {
                 int dif=o1.size()-o2.size();
                 if(dif<0){
                     return 1;

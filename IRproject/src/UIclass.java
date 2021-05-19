@@ -15,6 +15,7 @@ import org.json.*;
 import java.io.*;
 import java.text.CollationKey;
 import java.text.Collator;
+import java.util.List;
 
 public class UIclass extends JFrame{
 
@@ -23,6 +24,9 @@ public class UIclass extends JFrame{
     public JSlider jSlider;
     public static JTextArea showArea;
     public static JScrollPane scroll;
+    public JRadioButton tf;
+    public JRadioButton wf;
+    public ButtonGroup bgroup = new ButtonGroup();
     public ArrayList<Character> text;
     private searchMethod sm;
     public TreeMap<Character,Term> getDictionary;
@@ -47,13 +51,12 @@ public class UIclass extends JFrame{
         this.setTitle("信息检索");
 
         this.getContentPane().setBackground(new Color(255,255,255));
-        String path="IRproject/dataset/poet.tang.1000.json";
-        //String path =".\\dataset\\poet.tang.1000.json";
+        //String path="IRproject/dataset/poet.tang.1000.json";
+        String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
-        //dataProcessor.writeFile();
+        dataProcessor.writeFile();
         poets = dataProcessor.getPoets();
         terms = dataProcessor.getPoetTerm();
-
 
     }
 
@@ -72,8 +75,8 @@ public class UIclass extends JFrame{
     {
         if(search == null) {
             search = new javax.swing.JButton();
-            search.setBounds(820, 50, 80, 20);
-            search.setText("搜索");
+            search.setBounds(820, 50, 140, 20);
+            search.setText("布尔模型搜索");
         }
         search.addActionListener(new ActionListener() {
             @Override
@@ -82,13 +85,23 @@ public class UIclass extends JFrame{
                 searchMethod s = new searchMethod();
                 String text;
                 text=searchText.getText();
-                TreeMap<String, Integer> result = s.query(text,terms);
-                if(result.isEmpty()){
+                TreeMap<String, ArrayList<Double>> result = s.query(text,terms);
+                List<Map.Entry<String, ArrayList<Double>>> list = new ArrayList<Map.Entry<String, ArrayList<Double>>>(result.entrySet());
+
+
+                list.sort(new Comparator<Map.Entry<String, ArrayList<Double>>>() {
+                    //升序排序
+                    public int compare(Map.Entry<String, ArrayList<Double>> o1, Map.Entry<String, ArrayList<Double>> o2) {
+                        //若为tfidf排序则get(1)，wfidf则为get(2)
+                        return o2.getValue().get(1).compareTo(o1.getValue().get(1));
+                    }
+                });
+                if(list.isEmpty()){
                     showArea.append("无结果");
                 }else{
-                    for(String d : result.keySet()) {
-                        Poet t = poets.get(d);
-                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n\n\n");
+                    for(Map.Entry<String,ArrayList<Double>> d : list) {
+                        Poet t = poets.get(d.getKey());
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"tfidf:"+result.get(d.getKey()).get(1)+"\n"+"wfidf:"+result.get(d.getKey()).get(2)+"\n");
                     }
                 }
             }
@@ -96,6 +109,23 @@ public class UIclass extends JFrame{
         return search;
 
     }
+
+    public JRadioButton getTf() {
+        if(tf==null) {
+            tf = new JRadioButton("tfidf",true);
+            tf.setLocation(300,75);
+        }
+        return tf;
+    }
+
+    public JRadioButton getWf() {
+        if(wf==null) {
+            wf = new JRadioButton("wfidf");
+            wf.setLocation(400, 75);
+        }
+        return wf;
+    }
+
     private JTextArea getJTextArea()
     {
         if(showArea == null)

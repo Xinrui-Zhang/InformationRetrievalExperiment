@@ -1,7 +1,9 @@
 import org.json.*;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.CollationKey;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeMap;
 
@@ -46,12 +48,10 @@ public class dataProcessor {
      * @return void
      **/
     public static void readFile(String path) throws IOException {
-        char[] cbuf = new char[100000000];
+        char[] cbuf = new char[1000000000];
         InputStreamReader input =new InputStreamReader(new FileInputStream(new File(path)));
         int len =input.read(cbuf);
         String text =new String(cbuf,0,len);
-        cbuf=null;
-        System.gc();
         //构建json对象
         JSONObject obj = new JSONObject(text.substring(text.indexOf("{")));
         System.out.println("groupID"+obj.getString("groupID"));
@@ -87,19 +87,26 @@ public class dataProcessor {
         for (Term term : poetTerm.values()){
             TreeMap<String, Double> tfidf = new TreeMap<>();
             TreeMap<String, Double> wfidf = new TreeMap<>();
+            TreeMap<String, ArrayList<Double>> docs = new TreeMap<>();
+            ArrayList<Double> nums;
             for(String docID : term.getDoc().keySet()){
                 Poet temp = poets.get(docID);
-                double tf = (double)term.getDoc().get(docID) / (double)temp.getWordNum();
+                nums = new ArrayList<>();
+                double tf = (double)term.getDoc().get(docID).get(0) / (double)temp.getWordNum();
+                //double tf = (double)term.getDoc().get(docID).get(0);
                 double wf = tf==0? 0 : (Math.log(tf)/Math.log(10)+1);
                 double idf = Math.log(1000 / (double)(term.getDocNum()+1))/Math.log(10);
                 double tf_idf = tf * idf;
                 double wf_idf = wf * idf;
-                tfidf.put(docID,tf_idf);
-                wfidf.put(docID,wf_idf);
+                nums.add(tf);
+                nums.add(tf_idf);
+                nums.add(wf_idf);
+                docs.put(docID,nums);
             }
-            term.setTfidf(tfidf);
-            term.setWfidf(wfidf);
+            term.setDocs(docs);
         }
+
+
     }
 
     /**
@@ -121,9 +128,9 @@ public class dataProcessor {
             for(String docID : term.getDoc().keySet()){
                 JSONObject subSubObj=new JSONObject();//创建对象数组里的子对象
                 subSubObj.put("docID",docID);
-                subSubObj.put("TermFreq",term.getDoc().get(docID));
-                subSubObj.put("tf-idf",term.getTfidf().get(docID));
-                subSubObj.put("wf-idf",term.getWfidf().get(docID));
+                subSubObj.put("TermFreq",term.getDoc().get(docID).get(0));
+                subSubObj.put("tfidf",term.getDoc().get(docID).get(1));
+                subSubObj.put("wfidf",term.getDoc().get(docID).get(2));
                 subObj.accumulate("Docs", subSubObj);
             }
             subObj.put("CollFreq",term.getCollFreq());
