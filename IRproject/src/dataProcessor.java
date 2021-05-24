@@ -40,6 +40,9 @@ public class dataProcessor {
         }
     });
 
+    private static TreeMap<String,TreeMap<Character,Double>> dictionarys = new TreeMap<>();
+    private static TreeMap<String,TreeMap<Character,Double>> dictionarysMax = new TreeMap<>();
+
     /**
      * @author 张心睿
      * @description 读取诗词文件并存入Java对象Poet
@@ -92,8 +95,8 @@ public class dataProcessor {
             for(String docID : term.getDoc().keySet()){
                 Poet temp = poets.get(docID);
                 nums = new ArrayList<>();
-                double tf = (double)term.getDoc().get(docID).get(0) / (double)temp.getWordNum();
-                //double tf = (double)term.getDoc().get(docID).get(0);
+                //double tf = (double)term.getDoc().get(docID).get(0) / (double)temp.getWordNum();
+                double tf = (double)term.getDoc().get(docID).get(0);
                 double wf = tf==0? 0 : (Math.log(tf)/Math.log(10)+1);
                 double idf = Math.log(1000 / (double)(term.getDocNum()+1))/Math.log(10);
                 double tf_idf = tf * idf;
@@ -101,6 +104,7 @@ public class dataProcessor {
                 nums.add(tf);
                 nums.add(tf_idf);
                 nums.add(wf_idf);
+                nums.add(idf);
                 docs.put(docID,nums);
             }
             term.setDocs(docs);
@@ -140,6 +144,50 @@ public class dataProcessor {
         osw.write(obj.toString());
         osw.flush();//清空缓冲区，强制输出数据
         osw.close();//关闭输出流
+
+        for(Poet poet : poets.values()){
+            File f = new File("./dataset/poets/"+poet.getPid()+".json");
+            if(!f.exists())
+                f.createNewFile();
+            OutputStreamWriter oswdic = new OutputStreamWriter(new FileOutputStream(".\\dataset\\poets\\"+poet.getPid()+".json"),"UTF-8");
+
+            JSONObject dicobj=new JSONObject();//创建JSONObject对象
+
+            TreeMap<Character, Double> dic = new TreeMap<>();
+
+            File fmax = new File("./dataset/poets/max"+poet.getPid()+".json");
+            if(!fmax.exists())
+                fmax.createNewFile();
+            OutputStreamWriter oswdicMax = new OutputStreamWriter(new FileOutputStream(".\\dataset\\poets\\max"+poet.getPid()+".json"),"UTF-8");
+
+            JSONObject dicobjMax=new JSONObject();//创建JSONObject对象
+
+            TreeMap<Character, Double> dicMax = new TreeMap<>();
+
+            for(Term term : poetTerm.values()){
+                if(poet.getContent().indexOf(term.getWord())!=-1){
+                    ArrayList<Double> t = term.getDocs().get(poet.getPid());
+                    dic.put(term.getWord(),t.get(0)/ poet.getWordNum() * t.get(3));
+                    dicMax.put(term.getWord(),(0.5+0.5*t.get(0)/term.getMaxTf()) * t.get(3));
+                    dicobj.put(String.valueOf(term.getWord()),t.get(0)/ poet.getWordNum() * t.get(3));
+                    dicobjMax.put(String.valueOf(term.getWord()),(0.5+0.5*t.get(0)/term.getMaxTf()) * t.get(3));
+                }else{
+                    dic.put(term.getWord(),0.0);
+                    dicMax.put(term.getWord(),0.0);
+                    dicobj.put(String.valueOf(term.getWord()),0);
+                    dicobjMax.put(String.valueOf(term.getWord()),0);
+                }
+            }
+            dictionarys.put(poet.getPid(),dic);
+            dictionarysMax.put(poet.getPid(),dicMax);
+            oswdic.write(dicobj.toString());
+            oswdicMax.write(dicobjMax.toString());
+            oswdic.flush();//清空缓冲区，强制输出数据
+            oswdic.close();//关闭输出流
+            oswdicMax.flush();//清空缓冲区，强制输出数据
+            oswdicMax.close();//关闭输出流
+        }
+
     }
 
     public static TreeMap<String, Poet> getPoets() {
@@ -148,6 +196,14 @@ public class dataProcessor {
 
     public static TreeMap<Character, Term> getPoetTerm() {
         return poetTerm;
+    }
+
+    public static TreeMap<String, TreeMap<Character, Double>> getDictionarys() {
+        return dictionarys;
+    }
+
+    public static TreeMap<String, TreeMap<Character, Double>> getDictionarysMax() {
+        return dictionarysMax;
     }
 
     public static void main(String[] args) throws IOException {

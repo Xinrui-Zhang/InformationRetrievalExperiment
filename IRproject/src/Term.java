@@ -9,11 +9,9 @@ import java.util.TreeMap;
  */
 public class Term {
     private char word;
-    private TreeMap<String, Integer> tf = new TreeMap<>();
     private int collFreq = 0;
     private int docNum = 0;
-    private TreeMap<String, Double> tfidf = new TreeMap<>();
-    private TreeMap<String, Double> wfidf = new TreeMap<>();
+    private double maxTf=0;
     private TreeMap<String, ArrayList<Double>> docs = new TreeMap<>();
 
     /**
@@ -35,9 +33,11 @@ public class Term {
      * @return void
      **/
     public void addDoc(String docID) {
+        maxTf = Math.max(maxTf, 1);
         if(this.docs.containsKey(docID)){
             ArrayList<Double> temp = this.docs.get(docID);
             temp.set(0,temp.get(0)+1);
+            maxTf = Math.max(maxTf,temp.get(0));
             this.docs.put(docID, temp);
         }else {
             ArrayList<Double> temp = new ArrayList<>();
@@ -141,6 +141,10 @@ public class Term {
 
     public TreeMap<String, ArrayList<Double>> getDocs() {
         return docs;
+    }
+
+    public double getMaxTf() {
+        return maxTf;
     }
 }
 

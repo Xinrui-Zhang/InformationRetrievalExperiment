@@ -6,6 +6,7 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.tree.DefaultTreeCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +21,9 @@ import java.util.List;
 public class UIclass extends JFrame{
 
     public JTextField searchText;
-    public JButton search;
+    public JButton boolSearch;
+    public JButton vectorSearch;
+    public JButton vectorMaxSearch;
     public JSlider jSlider;
     public static JTextArea showArea;
     public static JScrollPane scroll;
@@ -46,6 +49,8 @@ public class UIclass extends JFrame{
         this.getContentPane().setLayout(null);
         this.add(getJTextField(), null);
         this.add(getJButton(), null);
+        this.add(getVectorSearch(), null);
+        this.add(getVectorMaxSearch(), null);
         this.add(getScrollPane(),null);
         //this.add(getJTextArea(),null);
         this.setTitle("信息检索");
@@ -66,19 +71,93 @@ public class UIclass extends JFrame{
     {
         if(searchText == null) {
             searchText = new javax.swing.JTextField();
-            searchText.setBounds(300, 50, 300, 20);
+            searchText.setBounds(250, 50, 500, 20);
         }
         return searchText;
     }
 
+    public JButton getVectorMaxSearch() {
+        if(vectorMaxSearch == null) {
+            vectorMaxSearch = new javax.swing.JButton();
+            vectorMaxSearch.setBounds(590, 80, 140, 20);
+            vectorMaxSearch.setText("向量模型(max)");
+        }
+        vectorMaxSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showArea.setText("");
+                searchMethod s = new searchMethod();
+                String text;
+                text=searchText.getText();
+                TreeMap<String, Double> result = s.CosinSimilarityMax(text);
+                List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
+
+                list.sort(new Comparator<Map.Entry<String, Double>>() {
+                    //升序排序
+                    public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                        //若为tfidf排序则get(1)，wfidf则为get(2)
+                        return o2.getValue().compareTo(o1.getValue());
+                    }
+                });
+                if(list.isEmpty()){
+                    showArea.append("无结果");
+                }else{
+                    list = list.subList(0,20);
+                    for(Map.Entry<String,Double> d : list) {
+                        Poet t = poets.get(d.getKey());
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
+                    }
+                }
+            }
+        });
+        return vectorMaxSearch;
+    }
+
+    private JButton getVectorSearch(){
+        if(vectorSearch == null) {
+            vectorSearch = new javax.swing.JButton();
+            vectorSearch.setBounds(425, 80, 140, 20);
+            vectorSearch.setText("向量模型");
+        }
+        vectorSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showArea.setText("");
+                searchMethod s = new searchMethod();
+                String text;
+                text=searchText.getText();
+                TreeMap<String, Double> result = s.CosinSimilarity(text);
+                List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
+
+                list.sort(new Comparator<Map.Entry<String, Double>>() {
+                    //升序排序
+                    public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                        //若为tfidf排序则get(1)，wfidf则为get(2)
+                        return o2.getValue().compareTo(o1.getValue());
+                    }
+                });
+                if(list.isEmpty()){
+                    showArea.append("无结果");
+                }else{
+                    list = list.subList(0,20);
+                    for(Map.Entry<String,Double> d : list) {
+                        Poet t = poets.get(d.getKey());
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
+                    }
+                }
+            }
+        });
+        return vectorSearch;
+    }
+
     private JButton getJButton()
     {
-        if(search == null) {
-            search = new javax.swing.JButton();
-            search.setBounds(820, 50, 140, 20);
-            search.setText("布尔模型搜索");
+        if(boolSearch == null) {
+            boolSearch = new javax.swing.JButton();
+            boolSearch.setBounds(260, 80, 140, 20);
+            boolSearch.setText("布尔模型");
         }
-        search.addActionListener(new ActionListener() {
+        boolSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showArea.setText("");
@@ -87,7 +166,6 @@ public class UIclass extends JFrame{
                 text=searchText.getText();
                 TreeMap<String, ArrayList<Double>> result = s.query(text,terms);
                 List<Map.Entry<String, ArrayList<Double>>> list = new ArrayList<Map.Entry<String, ArrayList<Double>>>(result.entrySet());
-
 
                 list.sort(new Comparator<Map.Entry<String, ArrayList<Double>>>() {
                     //升序排序
@@ -106,7 +184,7 @@ public class UIclass extends JFrame{
                 }
             }
         });
-        return search;
+        return boolSearch;
 
     }
 
