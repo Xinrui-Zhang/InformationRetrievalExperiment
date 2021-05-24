@@ -6,7 +6,9 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.*;
+import java.util.Map.Entry;
 public class searchMethod {
+    public TreeMap<String,TreeMap<Character,Double>> docVector;
 
     public TreeMap<String, ArrayList<Double>> query(String q, TreeMap<Character, Term> terms){
         TreeMap<String, ArrayList<Double>> result = new TreeMap<>();
@@ -37,6 +39,35 @@ public class searchMethod {
 
         return result;
     }
+
+    public TreeMap<String,Double> CosinSimilarity(String qvector)
+    {
+        TreeMap<String,Double> result =new TreeMap<String,Double>();//返回一个文档和对应相关性的集合
+        TreeMap<Character,Double> dvector;//文档向量
+        Character query;
+        int i = 0;
+        while(i<qvector.length())
+        {   int j=0;
+            query=(Character)qvector.charAt(i);
+            while(j<docVector.keySet().size())//全部文档向量的集合
+            {   String Docid=(String)docVector.keySet().toArray()[i];
+                dvector=(TreeMap<Character,Double>)docVector.get(Docid);
+                double dw=dvector.get(query);
+                if(result.containsKey(Docid))//如果计算过这个文档
+                {  double oldwf=result.get(Docid);
+                    result.replace(Docid,oldwf+dw);
+                }else
+                {
+                    result.put(Docid,dw);
+                }
+                j++;
+            }
+            i++;
+        }
+        return result;
+    }
+    
+
 
     private TreeMap<String, ArrayList<Double>> AND(TreeMap<String, ArrayList<Double>> p1, TreeMap<String, ArrayList<Double>> p2) {
         TreeMap<String, ArrayList<Double>> docId = new TreeMap<String, ArrayList<Double>>();
