@@ -52,13 +52,15 @@ public class searchMethod {
             while(j<docVector.keySet().size())//全部文档向量的集合
             {   String Docid=(String)docVector.keySet().toArray()[i];
                 dvector=(TreeMap<Character,Double>)docVector.get(Docid);
-                double dw=dvector.get(query);
-                if(result.containsKey(Docid))//如果计算过这个文档
-                {  double oldwf=result.get(Docid);
-                    result.replace(Docid,oldwf+dw);
-                }else
-                {
-                    result.put(Docid,dw);
+                if(dvector.containsKey(query)) {//如果文档向量里有这个字，就计算
+                    double dw = dvector.get(query);
+                    if (result.containsKey(Docid))//如果计算过这个文档
+                    {
+                        double oldwf = result.get(Docid);
+                        result.replace(Docid, oldwf + dw);
+                    } else {
+                        result.put(Docid, dw);
+                    }
                 }
                 j++;
             }
