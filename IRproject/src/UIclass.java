@@ -26,6 +26,7 @@ public class UIclass extends JFrame{
     public JButton vectorSearch;
     public JButton vectorMaxSearch;
     public JButton MLESearch;
+    public JButton PossbilitySearch;
     public JSlider jSlider;
     public static JTextArea showArea;
     public static JScrollPane scroll;
@@ -60,10 +61,10 @@ public class UIclass extends JFrame{
         this.setTitle("信息检索");
 
         this.getContentPane().setBackground(new Color(255,255,255));
-        //String path="IRproject/dataset/poet.tang.1000.json";
-        String path =".\\dataset\\poet.tang.1000.json";
+        String path="IRproject/dataset/poet.tang.1000.json";
+        //String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
-        dataProcessor.writeFile();
+        //dataProcessor.writeFile();
         poets = dataProcessor.getPoets();
         terms = dataProcessor.getPoetTerm();
 
@@ -127,6 +128,45 @@ public class UIclass extends JFrame{
         return MLESearch;
 
     }
+    public JButton getPossbilityMethod()
+    {
+        if(PossbilitySearch == null) {
+            PossbilitySearch = new javax.swing.JButton();
+            PossbilitySearch.setBounds(740, 80, 140, 20);
+            PossbilitySearch.setText("概率模型");
+        }
+        PossbilitySearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showArea.setText("");
+                searchMethod s = new searchMethod();
+                String text;
+                text=searchText.getText();
+
+                TreeMap<String, Double> result = s.possbilityMethod(text);
+                List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
+
+                list.sort(new Comparator<Map.Entry<String, Double>>() {
+                    //升序排序
+                    public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+
+                        return o2.getValue().compareTo(o1.getValue());
+                    }
+                });
+                if(list.isEmpty()){
+                    showArea.append("无结果");
+                }else{
+                    list = list.subList(0,20);
+                    for(Map.Entry<String,Double> d : list) {
+                        Poet t = poets.get(d.getKey());
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
+                    }
+                }
+            }
+        });
+        return PossbilitySearch;
+    }
+
 
     public JButton getVectorMaxSearch() {
         if(vectorMaxSearch == null) {
