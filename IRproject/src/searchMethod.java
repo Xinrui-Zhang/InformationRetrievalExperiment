@@ -110,6 +110,59 @@ public class searchMethod {
         return result;
     }
 
+    public TreeMap<String,Double> possbilityMethod(String query)
+    {
+        TreeMap<String,Double> result =new TreeMap<String,Double>();
+        TreeMap<String, ArrayList<Double>> rdoc=new TreeMap<String, ArrayList<Double>>();//or的结果
+        TreeMap<Character, Term> terms=dataProcessor.getPoetTerm();
+        Character queryTerm;
+        int i = 0;
+        double maxDoc=1000.0;
+        double pi=0;
+        double ri=0;
+        for(int n = 0; n < query.length(); n++) {
+            if(terms.containsKey(query.charAt(n))) {
+                if(rdoc.size()==0) {
+                    rdoc = terms.get(query.charAt(n)).getDoc();
+                }else {
+                    rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+                }
+            }
+        }//计算or
+
+
+        while(i<query.length())
+        {   int j=0;
+            queryTerm=query.charAt(i);
+            while(j<rdoc.keySet().size()) {
+                String Docid=(String)rdoc.keySet().toArray()[j];
+                if (dataProcessor.getPoetTerm().containsKey(queryTerm)) {
+                    Term t = dataProcessor.getPoetTerm().get(queryTerm);
+                    double docNum = t.getDocNum();
+                    pi = docNum / (maxDoc+1);
+                    if(t.getDoc().containsKey(Docid))
+                    {
+                        double RSV=0.0;
+                        double RSVi = 2*Math.log(1000 / (double)(t.getDocNum()+1));
+                        RSVi+=0.5*Math.log(pi/(1-pi));
+                        if (result.containsKey(Docid))//如果计算过这个文档
+                        {
+                            double oldRSV = result.get(Docid);
+                            result.replace(Docid, oldRSV+RSVi);
+                        } else {
+                            result.put(Docid, RSVi);
+                        }
+
+                    }
+
+                }
+                j++;
+            }
+            i++;
+        }
+        return result;
+    }
+
     private TreeMap<String, ArrayList<Double>> AND(TreeMap<String, ArrayList<Double>> p1, TreeMap<String, ArrayList<Double>> p2) {
         TreeMap<String, ArrayList<Double>> docId = new TreeMap<String, ArrayList<Double>>();
         int i = 0, j = 0;
