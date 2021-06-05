@@ -21,9 +21,11 @@ import java.util.List;
 public class UIclass extends JFrame{
 
     public JTextField searchText;
+    public JTextField lambdaText;
     public JButton boolSearch;
     public JButton vectorSearch;
     public JButton vectorMaxSearch;
+    public JButton MLESearch;
     public JSlider jSlider;
     public static JTextArea showArea;
     public static JScrollPane scroll;
@@ -50,7 +52,9 @@ public class UIclass extends JFrame{
         this.add(getJTextField(), null);
         this.add(getJButton(), null);
         this.add(getVectorSearch(), null);
-        this.add(getVectorMaxSearch(), null);
+        //this.add(getVectorMaxSearch(), null);
+        this.add(getMLESearch(),null);
+        this.add(getLambdaText(), null);
         this.add(getScrollPane(),null);
         //this.add(getJTextArea(),null);
         this.setTitle("信息检索");
@@ -76,6 +80,54 @@ public class UIclass extends JFrame{
         return searchText;
     }
 
+    private JTextField getLambdaText(){
+        if(lambdaText == null) {
+            lambdaText = new javax.swing.JTextField();
+            lambdaText.setBounds(590, 110, 40, 20);
+        }
+        return lambdaText;
+    }
+
+    public JButton getMLESearch(){
+        if(MLESearch == null) {
+            MLESearch = new javax.swing.JButton();
+            MLESearch.setBounds(590, 80, 140, 20);
+            MLESearch.setText("语言模型(MLE)");
+        }
+        MLESearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showArea.setText("");
+                searchMethod s = new searchMethod();
+                String text;
+                text=searchText.getText();
+                String lam = lambdaText.getText();
+                Double lambda = Double.parseDouble(lam);
+                TreeMap<String, Double> result = s.MLEcal(text, lambda);
+                List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
+
+                list.sort(new Comparator<Map.Entry<String, Double>>() {
+                    //升序排序
+                    public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                        //若为tfidf排序则get(1)，wfidf则为get(2)
+                        return o2.getValue().compareTo(o1.getValue());
+                    }
+                });
+                if(list.isEmpty()){
+                    showArea.append("无结果");
+                }else{
+                    list = list.subList(0,20);
+                    for(Map.Entry<String,Double> d : list) {
+                        Poet t = poets.get(d.getKey());
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
+                    }
+                }
+            }
+        });
+        return MLESearch;
+
+    }
+
     public JButton getVectorMaxSearch() {
         if(vectorMaxSearch == null) {
             vectorMaxSearch = new javax.swing.JButton();
@@ -89,13 +141,12 @@ public class UIclass extends JFrame{
                 searchMethod s = new searchMethod();
                 String text;
                 text=searchText.getText();
-                TreeMap<String, Double> result = s.CosinSimilarityMax(text);
+                TreeMap<String, Double> result = s.MLEcal(text,0.5);
                 List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
 
                 list.sort(new Comparator<Map.Entry<String, Double>>() {
                     //升序排序
                     public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-                        //若为tfidf排序则get(1)，wfidf则为get(2)
                         return o2.getValue().compareTo(o1.getValue());
                     }
                 });
@@ -132,7 +183,6 @@ public class UIclass extends JFrame{
                 list.sort(new Comparator<Map.Entry<String, Double>>() {
                     //升序排序
                     public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-                        //若为tfidf排序则get(1)，wfidf则为get(2)
                         return o2.getValue().compareTo(o1.getValue());
                     }
                 });

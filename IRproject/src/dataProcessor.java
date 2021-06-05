@@ -145,7 +145,9 @@ public class dataProcessor {
         osw.flush();//清空缓冲区，强制输出数据
         osw.close();//关闭输出流
 
+        int totalNum=0;
         for(Poet poet : poets.values()){
+            totalNum+=poet.getWordNum();
             File f = new File("./dataset/poets/"+poet.getPid()+".json");
             if(!f.exists())
                 f.createNewFile();
@@ -187,6 +189,7 @@ public class dataProcessor {
             oswdicMax.flush();//清空缓冲区，强制输出数据
             oswdicMax.close();//关闭输出流
         }
+        System.out.println(totalNum);
 
     }
 

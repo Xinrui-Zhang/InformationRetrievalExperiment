@@ -41,6 +41,28 @@ public class searchMethod {
         return result;
     }
 
+    public TreeMap<String, Double> MLEcal(String text, Double lambda){
+        TreeMap<String,Double> result =new TreeMap<String,Double>();
+        TreeMap<Character, Term> dictionary = dataProcessor.getPoetTerm();
+        TreeMap<String, Poet> poets = dataProcessor.getPoets();
+        for(int i = 0; i < text.length(); i++){
+            Term t = dictionary.get(text.charAt(i));
+            for(String d : t.getDoc().keySet()){
+                Double value = 1.0;
+                if (result.containsKey(d)){
+                    value = result.get(d);
+                }
+                Poet p = poets.get(d);
+                double temp = 0.0;
+                ArrayList<Double> doc = t.getDoc().get(d);
+                temp = lambda * (doc.get(0) / p.getWordNum()) + (1-lambda) * (t.getCollFreq() / 57538);
+                value *= temp;
+                result.put(d, value);
+            }
+        }
+        return result;
+    }
+
     public TreeMap<String,Double> CosinSimilarity(String qvector)
     {
         TreeMap<String,Double> result =new TreeMap<String,Double>();//返回一个文档和对应相关性的集合
