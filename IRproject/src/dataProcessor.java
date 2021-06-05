@@ -15,7 +15,7 @@ import java.util.TreeMap;
 
 public class dataProcessor {
 
-    private static TreeMap<String, Poet> poets = new TreeMap<String, Poet>(new Comparator() {
+    public static TreeMap<String, Poet> poets = new TreeMap<String, Poet>(new Comparator() {
         public int compare(Object o1, Object o2) {
             //如果有空值，直接返回0
             if (o1 == null || o2 == null)

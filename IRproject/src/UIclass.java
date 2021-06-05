@@ -56,6 +56,7 @@ public class UIclass extends JFrame{
         //this.add(getVectorMaxSearch(), null);
         this.add(getMLESearch(),null);
         this.add(getLambdaText(), null);
+        this.add(getPossbilityMethod());
         this.add(getScrollPane(),null);
         //this.add(getJTextArea(),null);
         this.setTitle("信息检索");

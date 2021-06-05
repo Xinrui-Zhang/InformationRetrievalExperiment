@@ -142,16 +142,32 @@ public class searchMethod {
         double maxDoc=1000.0;
         double pi=0;
         double ri=0;
-        for(int n = 0; n < query.length(); n++) {
-            if(terms.containsKey(query.charAt(n))) {
-                if(rdoc.size()==0) {
-                    rdoc = terms.get(query.charAt(n)).getDoc();
-                }else {
-                    rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+        if(query.length()==1)
+        {
+            rdoc=terms.get(query.charAt(0)).getDoc();
+        }
+        else {
+            for (int n = 0; n < query.length() - 1; n++) {
+                if (terms.containsKey(query.charAt(n))) {
+                    if (rdoc.size() == 0) {
+                        rdoc = terms.get(query.charAt(n)).getDoc();
+                    } else {
+                        rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+                    }
                 }
-            }
-        }//计算or
+            }//计算or
+        }
 
+
+        int WholeNum=0;
+        int m=0;
+        while(m<dataProcessor.poets.keySet().size())
+        {
+            Poet temp = dataProcessor.poets.get((String)dataProcessor.poets.keySet().toArray()[m]);
+            WholeNum+=temp.getWordNum();
+            m++;
+        }
+        WholeNum/=1000;
 
         while(i<query.length())
         {   int j=0;
@@ -163,10 +179,13 @@ public class searchMethod {
                     double docNum = t.getDocNum();
                     pi = docNum / (maxDoc+1);
                     if(t.getDoc().containsKey(Docid))
-                    {
+                    {   Poet temp = dataProcessor.poets.get(Docid);
                         double RSV=0.0;
                         double RSVi = 2*Math.log(1000 / (double)(t.getDocNum()+1));
                         RSVi+=0.5*Math.log(pi/(1-pi));
+                        double fi=t.getDoc().get(Docid).get(0);
+                        double Bi=2*fi/((0.25+0.75*(temp.getWordNum())/WholeNum)+fi);
+                        RSVi*=Bi;
                         if (result.containsKey(Docid))//如果计算过这个文档
                         {
                             double oldRSV = result.get(Docid);
