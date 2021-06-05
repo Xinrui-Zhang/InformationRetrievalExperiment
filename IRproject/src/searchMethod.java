@@ -142,15 +142,18 @@ public class searchMethod {
         double maxDoc=1000.0;
         double pi=0;
         double ri=0;
-        for(int n = 0; n < query.length(); n++) {
-            if(terms.containsKey(query.charAt(n))) {
-                if(rdoc.size()==0) {
-                    rdoc = terms.get(query.charAt(n)).getDoc();
-                }else {
-                    rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+        if(query.length()==1) rdoc = terms.get(query.charAt(0)).getDoc();
+        else{
+            for(int n = 0; n < query.length()-1; n++) {
+                if(terms.containsKey(query.charAt(n))) {
+                    if(rdoc.size()==0) {
+                        rdoc = terms.get(query.charAt(n)).getDoc();
+                    }else {
+                        rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+                    }
                 }
-            }
-        }//计算or
+            }//计算or
+        }
 
 
         while(i<query.length())

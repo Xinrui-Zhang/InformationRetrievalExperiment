@@ -110,6 +110,23 @@ public class dataProcessor {
             term.setDocs(docs);
         }
 
+        for(Poet poet : poets.values()){
+            TreeMap<Character, Double> dic = new TreeMap<>();
+            TreeMap<Character, Double> dicMax = new TreeMap<>();
+
+            for(Term term : poetTerm.values()){
+                if(poet.getContent().indexOf(term.getWord())!=-1){
+                    ArrayList<Double> t = term.getDocs().get(poet.getPid());
+                    dic.put(term.getWord(),t.get(0)/ poet.getWordNum() * t.get(3));
+                    dicMax.put(term.getWord(),(0.5+0.5*t.get(0)/term.getMaxTf()) * t.get(3));
+                }else{
+                    dic.put(term.getWord(),0.0);
+                    dicMax.put(term.getWord(),0.0);
+                }
+            }
+            dictionarys.put(poet.getPid(),dic);
+            dictionarysMax.put(poet.getPid(),dicMax);
+        }
 
     }
 
@@ -155,7 +172,7 @@ public class dataProcessor {
 
             JSONObject dicobj=new JSONObject();//创建JSONObject对象
 
-            TreeMap<Character, Double> dic = new TreeMap<>();
+            //TreeMap<Character, Double> dic = new TreeMap<>();
 
             File fmax = new File("./dataset/poets/max"+poet.getPid()+".json");
             if(!fmax.exists())
@@ -164,24 +181,24 @@ public class dataProcessor {
 
             JSONObject dicobjMax=new JSONObject();//创建JSONObject对象
 
-            TreeMap<Character, Double> dicMax = new TreeMap<>();
+            //TreeMap<Character, Double> dicMax = new TreeMap<>();
 
             for(Term term : poetTerm.values()){
                 if(poet.getContent().indexOf(term.getWord())!=-1){
                     ArrayList<Double> t = term.getDocs().get(poet.getPid());
-                    dic.put(term.getWord(),t.get(0)/ poet.getWordNum() * t.get(3));
-                    dicMax.put(term.getWord(),(0.5+0.5*t.get(0)/term.getMaxTf()) * t.get(3));
+                    //dic.put(term.getWord(),t.get(0)/ poet.getWordNum() * t.get(3));
+                    //dicMax.put(term.getWord(),(0.5+0.5*t.get(0)/term.getMaxTf()) * t.get(3));
                     dicobj.put(String.valueOf(term.getWord()),t.get(0)/ poet.getWordNum() * t.get(3));
                     dicobjMax.put(String.valueOf(term.getWord()),(0.5+0.5*t.get(0)/term.getMaxTf()) * t.get(3));
                 }else{
-                    dic.put(term.getWord(),0.0);
-                    dicMax.put(term.getWord(),0.0);
+                    //dic.put(term.getWord(),0.0);
+                    //dicMax.put(term.getWord(),0.0);
                     dicobj.put(String.valueOf(term.getWord()),0);
                     dicobjMax.put(String.valueOf(term.getWord()),0);
                 }
             }
-            dictionarys.put(poet.getPid(),dic);
-            dictionarysMax.put(poet.getPid(),dicMax);
+            //dictionarys.put(poet.getPid(),dic);
+            //dictionarysMax.put(poet.getPid(),dicMax);
             oswdic.write(dicobj.toString());
             oswdicMax.write(dicobjMax.toString());
             oswdic.flush();//清空缓冲区，强制输出数据

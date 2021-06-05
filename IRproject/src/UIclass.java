@@ -56,13 +56,14 @@ public class UIclass extends JFrame{
         //this.add(getVectorMaxSearch(), null);
         this.add(getMLESearch(),null);
         this.add(getLambdaText(), null);
+        this.add(getPossbilityMethod(), null);
         this.add(getScrollPane(),null);
         //this.add(getJTextArea(),null);
         this.setTitle("信息检索");
 
         this.getContentPane().setBackground(new Color(255,255,255));
-        String path="IRproject/dataset/poet.tang.1000.json";
-        //String path =".\\dataset\\poet.tang.1000.json";
+        //String path="IRproject/dataset/poet.tang.1000.json";
+        String path =".\\dataset\\poet.tang.1000.json";
         dataProcessor.readFile(path);
         //dataProcessor.writeFile();
         poets = dataProcessor.getPoets();
@@ -103,7 +104,7 @@ public class UIclass extends JFrame{
                 String text;
                 text=searchText.getText();
                 String lam = lambdaText.getText();
-                Double lambda = Double.parseDouble(lam);
+                Double lambda = lam.isEmpty() ? 0.5 : Double.parseDouble(lam);
                 TreeMap<String, Double> result = s.MLEcal(text, lambda);
                 List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
 
@@ -117,7 +118,7 @@ public class UIclass extends JFrame{
                 if(list.isEmpty()){
                     showArea.append("无结果");
                 }else{
-                    list = list.subList(0,20);
+                    list = list.subList(0, Math.min(list.size(), 20));
                     for(Map.Entry<String,Double> d : list) {
                         Poet t = poets.get(d.getKey());
                         showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
@@ -156,7 +157,7 @@ public class UIclass extends JFrame{
                 if(list.isEmpty()){
                     showArea.append("无结果");
                 }else{
-                    list = list.subList(0,20);
+                    list = list.subList(0, Math.min(list.size(), 20));
                     for(Map.Entry<String,Double> d : list) {
                         Poet t = poets.get(d.getKey());
                         showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
@@ -193,7 +194,7 @@ public class UIclass extends JFrame{
                 if(list.isEmpty()){
                     showArea.append("无结果");
                 }else{
-                    list = list.subList(0,20);
+                    list = list.subList(0, Math.min(list.size(), 20));
                     for(Map.Entry<String,Double> d : list) {
                         Poet t = poets.get(d.getKey());
                         showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
@@ -229,7 +230,7 @@ public class UIclass extends JFrame{
                 if(list.isEmpty()){
                     showArea.append("无结果");
                 }else{
-                    list = list.subList(0,20);
+                    list = list.subList(0, Math.min(list.size(), 20));
                     for(Map.Entry<String,Double> d : list) {
                         Poet t = poets.get(d.getKey());
                         showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
@@ -324,13 +325,5 @@ public class UIclass extends JFrame{
 
          UIclass w = new UIclass();
          w.setVisible(true);                         //设为可见
-
-
-
-
-
-
-     }
-
-
+    }
 }
