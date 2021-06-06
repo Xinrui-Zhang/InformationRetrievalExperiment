@@ -139,7 +139,7 @@ public class searchMethod {
         TreeMap<Character, Term> terms=dataProcessor.getPoetTerm();
         Character queryTerm;
         int i = 0;
-        double maxDoc=1000.0;
+
         double pi=0;
         double ri=0;
         if(query.length()==1) rdoc = terms.get(query.charAt(0)).getDoc();
@@ -149,12 +149,12 @@ public class searchMethod {
                     if(rdoc.size()==0) {
                         rdoc = terms.get(query.charAt(n)).getDoc();
                     }else {
-                        rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+                        rdoc = AND(rdoc, terms.get(query.charAt(n + 1)).getDoc());
                     }
                 }
             }//计算or
         }
-
+        double maxDoc=rdoc.keySet().size();
         int WholeNum=0;
         int m=0;
         while(m<dataProcessor.poets.keySet().size())
@@ -173,12 +173,14 @@ public class searchMethod {
                 if (dataProcessor.getPoetTerm().containsKey(queryTerm)) {
                     Term t = dataProcessor.getPoetTerm().get(queryTerm);
                     double docNum = t.getDocNum();
-                    pi = docNum / (maxDoc+1);
+                    //pi = docNum+0.5 / (maxDoc+1);
+                    pi =(1/3)+(2/3)*((docNum+0.5)/1001);
                     if(t.getDoc().containsKey(Docid))
                     {   Poet temp = dataProcessor.poets.get(Docid);
                         double RSV=0.0;
-                        double RSVi = 2*Math.log(1000 / (double)(t.getDocNum()+1));
-                        RSVi+=0.5*Math.log(pi/(1-pi));
+                        // ri = 1000-docNum+0.5 / (double)(1000-maxDoc+1);
+                         ri=(docNum+0.5)/1001;
+                        double RSVi=Math.log(pi/(1-pi))+Math.log((1-ri)/ri);
                         double fi=t.getDoc().get(Docid).get(0);
                         double Bi=2*fi/((0.25+0.75*(temp.getWordNum())/WholeNum)+fi);
                         RSVi*=Bi;
