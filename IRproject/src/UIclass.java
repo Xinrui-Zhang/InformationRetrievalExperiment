@@ -121,7 +121,7 @@ public class UIclass extends JFrame{
                     list = list.subList(0, Math.min(list.size(), 20));
                     for(Map.Entry<String,Double> d : list) {
                         Poet t = poets.get(d.getKey());
-                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"weight:"+result.get(d.getKey())+"\n");
+                        showArea.append(t.getTitle()+"\n"+t.getAuthor()+"\n"+t.getParagraphs()+"\n"+"similarity:"+result.get(d.getKey())+"\n");
                     }
                 }
             }
