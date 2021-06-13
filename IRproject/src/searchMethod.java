@@ -55,7 +55,7 @@ public class searchMethod {
                 Poet p = poets.get(d);
                 double temp = 0.0;
                 ArrayList<Double> doc = t.getDoc().get(d);
-                temp = lambda * (doc.get(0) / p.getWordNum()) + (1-lambda) * (t.getCollFreq() / 57538);
+                temp = lambda * (doc.get(0) / p.getWordNum()) + (1-lambda) * (t.getCollFreq() / 57538.0);
                 value *= temp;
                 result.put(d, value);
             }
@@ -149,12 +149,13 @@ public class searchMethod {
                     if(rdoc.size()==0) {
                         rdoc = terms.get(query.charAt(n)).getDoc();
                     }else {
-                        rdoc = AND(rdoc, terms.get(query.charAt(n + 1)).getDoc());
+                        rdoc = OR(rdoc, terms.get(query.charAt(n + 1)).getDoc());
                     }
                 }
             }//计算or
         }
         double maxDoc=rdoc.keySet().size();
+        //System.out.println(maxDoc);
         int WholeNum=0;
         int m=0;
         while(m<dataProcessor.poets.keySet().size())
@@ -173,12 +174,15 @@ public class searchMethod {
                 if (dataProcessor.getPoetTerm().containsKey(queryTerm)) {
                     Term t = dataProcessor.getPoetTerm().get(queryTerm);
                     double docNum = t.getDocNum();
-                    //pi = docNum+0.5 / (maxDoc+1);
-                    pi =(1/3)+(2/3)*((docNum+0.5)/1001);
+                    //pi = (docNum+0.5) / (maxDoc+1);
+
                     if(t.getDoc().containsKey(Docid))
                     {   Poet temp = dataProcessor.poets.get(Docid);
                         double RSV=0.0;
-                        // ri = 1000-docNum+0.5 / (double)(1000-maxDoc+1);
+                         //ri = (1000-docNum+0.5 )/ (double)(1000-maxDoc+1);
+                        //System.out.println(pi);
+                        //System.out.println(ri);
+                        pi =(1.0/3.0)+(2.0/3.0)*((docNum+0.5)/1001);
                          ri=(docNum+0.5)/1001;
                         double RSVi=Math.log(pi/(1-pi))+Math.log((1-ri)/ri);
                         double fi=t.getDoc().get(Docid).get(0);

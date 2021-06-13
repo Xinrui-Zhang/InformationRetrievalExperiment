@@ -104,7 +104,7 @@ public class UIclass extends JFrame{
                 String text;
                 text=searchText.getText();
                 String lam = lambdaText.getText();
-                Double lambda = lam.isEmpty() ? 0.5 : Double.parseDouble(lam);
+                Double lambda = lam.isEmpty() ? 0.8 : Double.parseDouble(lam);
                 TreeMap<String, Double> result = s.MLEcal(text, lambda);
                 List<Map.Entry<String, Double>> list = new ArrayList<Map.Entry<String, Double>>(result.entrySet());
 
